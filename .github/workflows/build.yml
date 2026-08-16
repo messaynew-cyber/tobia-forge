@@ -24,16 +24,14 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Bootstrap android scaffolding (binary pieces only, never clobber source)
+      - name: Refresh android scaffolding for this Flutter version
         run: |
-          flutter create --platforms=android --org com.tobia --project-name tobia_forge /tmp/scaffold 2>/dev/null || true
-          if [ ! -f android/gradle/wrapper/gradle-wrapper.jar ]; then
-            cp /tmp/scaffold/android/gradle/wrapper/gradle-wrapper.jar android/gradle/wrapper/ 2>/dev/null || true
-          fi
-          cp -r /tmp/scaffold/android/app/src/main/res/mipmap-* android/app/src/main/ 2>/dev/null || true
-          cp -r /tmp/scaffold/android/app/src/main/res/drawable* android/app/src/main/ 2>/dev/null || true
-          printf 'distributionBase=GRADLE_USER_HOME\ndistributionPath=wrapper/dists\ndistributionUrl=https\\://services.gradle.org/distributions/gradle-8.14.1-bin.zip\nnetworkTimeout=10000\nvalidateDistributionUrl=true\nzipStoreBase=GRADLE_USER_HOME\nzipStorePath=wrapper/dists\n' > android/gradle/wrapper/gradle-wrapper.properties
-          echo "--- wrapper ---"; ls android/gradle/wrapper/ 2>/dev/null || true
+          flutter create --platforms=android --org com.tobia --project-name tobia_forge . 2>&1 | tail -4
+          # Restore OUR app source, pubspec, Kotlin MainActivity + manifest (flutter create overwrote them).
+          # Keep the freshly generated android/ gradle + res (correct versions for this Flutter).
+          git checkout -- lib pubspec.yaml pubspec.lock android/app/src/main/kotlin android/app/src/main/AndroidManifest.xml 2>/dev/null || true
+          echo "--- restored lib ---"; ls lib/ lib/screens/ lib/widgets/ 2>/dev/null
+          echo "--- MainActivity present? ---"; find android/app/src/main/kotlin -name "*.kt" 2>/dev/null
 
       - name: Enable native assets
         run: flutter config --no-analytics
