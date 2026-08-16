@@ -27,7 +27,8 @@ jobs:
       - name: Refresh android scaffolding for this Flutter version
         run: |
           flutter create --platforms=android --org com.tobia --project-name tobia_forge . 2>&1 | tail -2 || true
-          git checkout -- lib pubspec.yaml android/app/src/main/kotlin android/app/src/main/AndroidManifest.xml 2>/dev/null || true
+          # Restore OUR app source, Kotlin, manifest + custom launcher icons (flutter create overwrote them).
+          git checkout -- lib pubspec.yaml android/app/src/main/kotlin android/app/src/main/AndroidManifest.xml android/app/src/main/res 2>/dev/null || true
 
       - name: Get dependencies
         run: flutter pub get
