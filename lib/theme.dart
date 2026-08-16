@@ -1,80 +1,113 @@
 import 'package:flutter/material.dart';
 
-/// TOBIA — THE FORGE design tokens.
-/// OLED-black canvas, molten gold + emerald accents, Cinzel-display / mono-data.
+/// TOBIA FORGE 2.0 — 2026 design canon.
+/// Dark-with-depth, glassmorphism 2.0, kinetic type, micro-interaction physics.
 class ForgeColors {
-  static const Color oled = Color(0xFF000000);
-  static const Color panel = Color(0xFF0A0A0F);
-  static const Color panel2 = Color(0xFF0D0D14);
-  static const Color gold = Color(0xFFD4AF37);
-  static const Color goldBright = Color(0xFFF0C94A);
-  static const Color goldDim = Color(0xFF8A7420);
-  static const Color green = Color(0xFF2EE66A);
-  static const Color greenDim = Color(0xFF1A8F45);
-  static const Color red = Color(0xFFFF4D4D);
-  static const Color text = Color(0xFFE8E6DF);
-  static const Color muted = Color(0xFF8A8790);
-  static const Color hairline = Color(0x2ED4AF37); // 18% gold
+  // Base dark layers — DEPTH, not flat black
+  static const Color bg0 = Color(0xFF07070A);   // deepest
+  static const Color bg1 = Color(0xFF0D0D12);  // surface step 1
+  static const Color bg2 = Color(0xFF13131A);  // surface step 2
+  static const Color bg3 = Color(0xFF1A1A23);  // raised
+
+  // Glass 2.0 tints
+  static const Color glass = Color(0x1FFFFFFF);      // 12% white base
+  static const Color glassBorder = Color(0x26FFFFFF); // 15% white hairline
+  static const Color glassHighlight = Color(0x3DFFFFFF); // 24% white top edge
+
+  // Brand — saturated strategic accents
+  static const Color gold = Color(0xFFF2C14E);
+  static const Color goldBright = Color(0xFFFFD97A);
+  static const Color goldDeep = Color(0xFFB07D2A);
+  static const Color emerald = Color(0xFF3BE38B);
+  static const Color emeraldDeep = Color(0xFF1E9E5F);
+  static const Color crimson = Color(0xFFFF5A63);
+  static const Color sky = Color(0xFF58A6FF);
+
+  static const Color text = Color(0xFFF0EEE8);
+  static const Color textSoft = Color(0xFFB8B5AE);
+  static const Color muted = Color(0xFF8A8680);
+  static const Color faint = Color(0xFF5A5752);
 }
 
-/// Emil-grade custom easing — Flutter's curve builder cannot use CSS cubic-bezier,
-/// so we use known-good eased curves for entrance + press feedback.
-class ForgeCurves {
-  // Fast entrance, decelerate hard (easeOutCubic-ish feel)
-  static const Curve easeOut = Curves.easeOutCubic;
-  // Slight overshoot for celebratory motion
-  static const Curve spring = Curves.easeOutBack;
+/// Motion system — every interaction is physics-based (springs, not tween-only).
+class ForgeMotion {
+  /// Bouncy, tactile press. For cards, buttons, tappable tiles.
+  static const SpringDescription press = SpringDescription(
+    mass: 1.2, stiffness: 620, damping: 34,
+  );
+  /// Proud, celebratory entrance.
+  static const SpringDescription enter = SpringDescription(
+    mass: 0.8, stiffness: 300, damping: 26,
+  );
+  /// Calm, premium settle for larger panels.
+  static const SpringDescription settle = SpringDescription(
+    mass: 1.0, stiffness: 230, damping: 30,
+  );
 }
 
 ThemeData buildForgeTheme() {
   final base = ThemeData(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: ForgeColors.oled,
+    useMaterial3: true,
     colorScheme: const ColorScheme.dark(
       primary: ForgeColors.gold,
-      secondary: ForgeColors.green,
-      surface: ForgeColors.panel,
-      error: ForgeColors.red,
+      secondary: ForgeColors.emerald,
+      surface: ForgeColors.bg1,
+      error: ForgeColors.crimson,
     ),
-    fontFamily: 'sans-serif',
+    scaffoldBackgroundColor: ForgeColors.bg0,
   );
   return base.copyWith(
     textTheme: base.textTheme.apply(
       bodyColor: ForgeColors.text,
       displayColor: ForgeColors.text,
     ),
-    cardTheme: CardThemeData(
-      color: ForgeColors.panel,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-        side: const BorderSide(color: ForgeColors.hairline),
-      ),
-      elevation: 0,
-    ),
-    dividerColor: ForgeColors.hairline,
+    splashFactory: InkRipple.splashFactory,
   );
 }
 
-/// Flutter type scale helpers (self-contained, no Theme inits at import time).
+/// Typography scale — kinetic-friendly (tracks style), editorial mix.
 class ForgeType {
-  static TextStyle serifDisplay(double size, {Color? color}) => TextStyle(
-        fontFamily: 'serif',
-        fontSize: size,
-        fontWeight: FontWeight.w600,
-        height: 1.08,
-        letterSpacing: 0.4,
-        color: color ?? ForgeColors.text,
-      );
-  static TextStyle mono(double size, {Color? color, double? spacing}) => TextStyle(
-        fontFamily: 'monospace',
-        fontSize: size,
-        letterSpacing: spacing ?? 1.2,
-        color: color ?? ForgeColors.muted,
-      );
-  static TextStyle label() => const TextStyle(
-        fontFamily: 'monospace',
-        fontSize: 10,
-        letterSpacing: 2.8,
-        color: ForgeColors.gold,
-      );
+  /// Big kinetic hero — letterspaced, weight-shifted display.
+  static TextStyle hero(double size, {Color? color}) => TextStyle(
+    fontFamily: 'sans-serif',
+    fontSize: size,
+    fontWeight: FontWeight.w800,
+    height: 0.98,
+    letterSpacing: -1.2,
+    color: color ?? ForgeColors.text,
+  );
+  /// Serif display accent (the sculptural moments).
+  static TextStyle serif(double size, {Color? color}) => TextStyle(
+    fontFamily: 'serif',
+    fontSize: size,
+    fontWeight: FontWeight.w600,
+    height: 1.05,
+    letterSpacing: 0.2,
+    color: color ?? ForgeColors.goldBright,
+  );
+  /// Ultra-tracked kicker / label.
+  static TextStyle kicker({Color? color, double size = 11}) => TextStyle(
+    fontFamily: 'monospace',
+    fontSize: size,
+    letterSpacing: 3.4,
+    fontWeight: FontWeight.w600,
+    color: color ?? ForgeColors.muted,
+  );
+  /// Data / mono readout.
+  static TextStyle mono(double size, {Color? color, double spacing = 1.4}) =>
+    TextStyle(
+      fontFamily: 'monospace',
+      fontSize: size,
+      letterSpacing: spacing,
+      fontWeight: FontWeight.w600,
+      color: color ?? ForgeColors.text,
+    );
+  /// Soft body text.
+  static TextStyle body({Color? color, double size = 14}) => TextStyle(
+    fontFamily: 'sans-serif',
+    fontSize: size,
+    height: 1.5,
+    color: color ?? ForgeColors.textSoft,
+  );
 }

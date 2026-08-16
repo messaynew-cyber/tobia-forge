@@ -6,9 +6,9 @@ import 'screens/forge_screen.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: ForgeColors.oled,
+    statusBarColor: ForgeColors.bg0,
     statusBarIconBrightness: Brightness.light,
-    systemNavigationBarColor: ForgeColors.oled,
+    systemNavigationBarColor: ForgeColors.bg0,
   ));
   runApp(const ForgeApp());
 }
@@ -19,7 +19,7 @@ class ForgeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TOBIA — The Forge',
+      title: 'TOBIA — The Forge 2.0',
       debugShowCheckedModeBanner: false,
       theme: buildForgeTheme(),
       home: const ForgeScreen(),
