@@ -26,12 +26,9 @@ jobs:
 
       - name: Refresh android scaffolding for this Flutter version
         run: |
-          flutter create --platforms=android --org com.tobia --project-name tobia_forge . 2>&1 | tail -4
-          # Restore OUR app source, pubspec, Kotlin MainActivity + manifest (flutter create overwrote them).
-          # Keep the freshly generated android/ gradle + res (correct versions for this Flutter).
-          git checkout -- lib pubspec.yaml pubspec.lock android/app/src/main/kotlin android/app/src/main/AndroidManifest.xml 2>/dev/null || true
-          echo "--- restored lib ---"; ls lib/ lib/screens/ lib/widgets/ 2>/dev/null
-          echo "--- MainActivity present? ---"; find android/app/src/main/kotlin -name "*.kt" 2>/dev/null
+          flutter create --platforms=android --org com.tobia --project-name tobia_forge . 2>&1 | tail -2 || true
+          git checkout -- lib pubspec.yaml android/app/src/main/kotlin android/app/src/main/AndroidManifest.xml 2>/dev/null || true
+          echo "MainActivity present:"; find android/app/src/main/kotlin -name "*.kt" 2>/dev/null
 
       - name: Enable native assets
         run: flutter config --no-analytics
@@ -39,8 +36,10 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Analyze (informational)
-        run: flutter analyze || true
+      - name: Surface Kotlin compile error (diagnostic)
+        run: |
+          cd android
+          ./gradlew :app:compileReleaseKotlin --console=plain 2>&1 | tail -60 || true
 
       - name: Build APK
         run: flutter build apk --release
