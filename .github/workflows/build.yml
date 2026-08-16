@@ -1,0 +1,46 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Bootstrap android scaffolding (missing pieces)
+        run: |
+          # Ensure android/ gradle files exist (keep published ones, fill gaps)
+          if [ ! -f android/settings.gradle ]; then
+            flutter create --platforms=android --org com.tobia . || true
+          fi
+          ls android/ || true
+
+      - name: Enable native assets
+        run: flutter config --no-analytics
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Analyze (informational)
+        run: flutter analyze || true
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tobia-forge-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
