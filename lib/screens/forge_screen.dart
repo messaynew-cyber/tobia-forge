@@ -174,30 +174,57 @@ class _ForgeScreenState extends State<ForgeScreen> {
 
   // ============ SCENES with FLUX art (TAPPABLE) ============
   Widget _scenes() {
-    return Column(children: kScenes.asMap().entries.map((en) {
-      final i = en.key; final s = en.value;
-      return Padding(padding: EdgeInsets.only(top: i == 0 ? 0 : 16), child: StaggeredEntrance(index: i, delayMs: 80, child: ForgeSurface(
-        onTap: () => _openScene(s), glow: s.glow, glowStrength: 0.12, radius: 26,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // FLUX art thumbnail
-          ClipRRect(borderRadius: BorderRadius.circular(16), child: AspectRatio(aspectRatio: 3/2,
-            child: Image.asset(s.imageAsset, fit: BoxFit.cover, errorBuilder: (_, __, ___) =>
-              Container(color: ForgeColors.bg2, child: Center(child: Icon(s.icon, color: s.glow, size: 44)))))),
-          const SizedBox(height: 14),
-          Row(children: [
-            Container(width: 3, height: 24, decoration: BoxDecoration(color: s.glow, borderRadius: BorderRadius.circular(2))),
-            const SizedBox(width: 12),
-            Expanded(child: Text(s.kicker, style: ForgeType.kicker(size: 10, color: s.glow))),
-            Icon(Icons.chevron_right_rounded, color: ForgeColors.faint, size: 20),
-          ]),
-          const SizedBox(height: 10),
-          for (var j=0;j<s.titleLines.length;j++) Padding(padding: EdgeInsets.only(top: j==0?0:2),
-            child: Text(s.titleLines[j], style: j==s.titleLines.length-1 ? ForgeType.hero(28, color: s.glow) : ForgeType.hero(28))),
-          const SizedBox(height: 8),
-          Text(s.body, style: ForgeType.body(color: ForgeColors.textSoft, size: 13)),
-        ])));)
-    }).toList());
+    return Column(
+      children: [ for (final s in kScenes) _sceneCard(s) ],
+    );
   }
+
+  Widget _sceneCard(ForgeScene s) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: StaggeredEntrance(
+        index: s.index - 1,
+        delayMs: 80,
+        child: ForgeSurface(
+          onTap: () => _openScene(s),
+          glow: s.glow,
+          glowStrength: 0.12,
+          radius: 26,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: AspectRatio(
+                  aspectRatio: 3 / 2,
+                  child: Image.asset(s.imageAsset, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(color: ForgeColors.bg2, child: Center(child: Icon(s.icon, color: s.glow, size: 44)))),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Container(width: 3, height: 24, decoration: BoxDecoration(color: s.glow, borderRadius: BorderRadius.circular(2))),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text(s.kicker, style: ForgeType.kicker(size: 10, color: s.glow))),
+                  Icon(Icons.chevron_right_rounded, color: ForgeColors.faint, size: 20),
+                ],
+              ),
+              const SizedBox(height: 10),
+              for (var j = 0; j < s.titleLines.length; j++)
+                Padding(
+                  padding: EdgeInsets.only(top: j == 0 ? 0 : 2),
+                  child: Text(s.titleLines[j], style: j == s.titleLines.length - 1 ? ForgeType.hero(28, color: s.glow) : ForgeType.hero(28)),
+                ),
+              const SizedBox(height: 8),
+              Text(s.body, style: ForgeType.body(color: ForgeColors.textSoft, size: 13)),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 
   Widget _systemHealth() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
