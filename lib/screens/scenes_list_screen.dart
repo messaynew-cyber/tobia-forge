@@ -49,7 +49,7 @@ class ScenesListScreen extends StatelessWidget {
                         ]),
                       ])),
                     ]))));
-              }).toList())));
+              }).toList()));
          ],
         ),
       ),

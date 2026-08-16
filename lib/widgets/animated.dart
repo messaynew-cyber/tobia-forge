@@ -14,7 +14,7 @@ class StaggeredEntrance extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 1.0, end: 0.0),
       duration: Duration(milliseconds: 600) + d,
-      curve: CurveTween(curve: const Cubic(0.16, 1, 0.3, 1)),
+      curve: const Cubic(0.16, 1, 0.3, 1),
       builder: (_, v, child) => Opacity(
         opacity: 1 - v.clamp(0.0, 1.0),
         child: Transform.translate(
@@ -39,7 +39,7 @@ class FadeScaleIn extends StatelessWidget {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: duration,
-      curve: CurveTween(curve: const Cubic(0.16, 1, 0.3, 1)),
+      curve: const Cubic(0.16, 1, 0.3, 1),
       builder: (_, v, child) => Opacity(
         opacity: v,
         child: Transform.scale(scale: fromScale + (1 - fromScale) * v, child: child),
@@ -86,7 +86,7 @@ class SlideReveal extends StatelessWidget {
     return TweenAnimationBuilder<Offset>(
       tween: Tween(begin: Offset(fromRight ? 1 : -1, 0), end: Offset.zero),
       duration: const Duration(milliseconds: 640),
-      curve: CurveTween(curve: const Cubic(0.16, 1, 0.3, 1)),
+      curve: const Cubic(0.16, 1, 0.3, 1),
       builder: (_, o, child) => FractionalTranslation(translation: Offset(o.dx * 0.06, 0), child: child),
       child: child,
     );

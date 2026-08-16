@@ -195,7 +195,7 @@ class _ForgeScreenState extends State<ForgeScreen> {
             child: Text(s.titleLines[j], style: j==s.titleLines.length-1 ? ForgeType.hero(28, color: s.glow) : ForgeType.hero(28))),
           const SizedBox(height: 8),
           Text(s.body, style: ForgeType.body(color: ForgeColors.textSoft, size: 13)),
-        ])));
+        ])));)
     }).toList());
   }
 
