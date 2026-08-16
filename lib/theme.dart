@@ -43,7 +43,7 @@ ThemeData buildForgeTheme() {
       bodyColor: ForgeColors.text,
       displayColor: ForgeColors.text,
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: ForgeColors.panel,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(22),
