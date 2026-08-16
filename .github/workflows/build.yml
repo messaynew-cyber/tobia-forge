@@ -18,13 +18,20 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Bootstrap android scaffolding (missing pieces)
+      - name: Bootstrap android scaffolding (binary pieces only, never clobber source)
         run: |
-          # Ensure android/ gradle files exist (keep published ones, fill gaps)
-          if [ ! -f android/settings.gradle ]; then
-            flutter create --platforms=android --org com.tobia . || true
+          # Generate a clean scaffold in /tmp, then copy ONLY missing binary assets
+          flutter create --platforms=android --org com.tobia --project-name tobia_forge /tmp/scaffold 2>/dev/null || true
+          # Gradle wrapper jar (binary, can't be authored by hand)
+          if [ ! -f android/gradle/wrapper/gradle-wrapper.jar ]; then
+            cp /tmp/scaffold/android/gradle/wrapper/gradle-wrapper.jar android/gradle/wrapper/ 2>/dev/null || true
           fi
-          ls android/ || true
+          # Launcher icon resources (binary mipmaps)
+          cp -r /tmp/scaffold/android/app/src/main/res/mipmap-* android/app/src/main/ 2>/dev/null || true
+          cp -r /tmp/scaffold/android/app/src/main/res/drawable* android/app/src/main/ 2>/dev/null || true
+          # Ensure our pinned Gradle version stays (authoritative)
+          printf 'distributionBase=GRADLE_USER_HOME\ndistributionPath=wrapper/dists\ndistributionUrl=https\\://services.gradle.org/distributions/gradle-8.14.1-bin.zip\nnetworkTimeout=10000\nvalidateDistributionUrl=true\nzipStoreBase=GRADLE_USER_HOME\nzipStorePath=wrapper/dists\n' > android/gradle/wrapper/gradle-wrapper.properties
+          echo "--- wrapper ---"; ls android/gradle/wrapper/ 2>/dev/null || true
 
       - name: Enable native assets
         run: flutter config --no-analytics
